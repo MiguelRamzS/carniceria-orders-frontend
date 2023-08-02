@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&family=Poppins:wght@300&family=Roboto&display=swap" rel="stylesheet">
+
+    <title>Ordenes</title>
+
+    <style>
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizelegibility;
+            letter-spacing: -0.25px;
+        }
+		html, body {
+            font-family: 'Kumbh Sans', sans-serif;
+            font-family: 'Poppins', sans-serif;
+            font-family: 'Roboto', sans-serif;
+            background-color: #FFFFFF;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: start;
+          }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            border-radius: 5%;
+            background-color: #E6E8E6;
+            width: 15%;
+            margin: 2% 2%;
+            border: 4px solid #F15025;
+            height: 45vh;
+        }
+        .orders{
+            width: 95%; 
+            display: flex;
+            justify-content: center;
+        }
+        .card h1 {
+            text-align: center; 
+            font-size: 45px;
+            font-weight: bold;
+            margin-bottom: 2.5%;
+            margin-left: 2.5%;
+            margin-right: 2.5%;
+        }
+        .card h2 {
+            font-size: 30px;
+        }
+        ol {
+            max-width: 300px;
+            display: inline-block;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            list-style-type: none;
+            margin: 0; 
+            padding: 0;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            width: 100%;
+            text-align: center;
+        }
+        .item{
+            padding-top: 3%;
+            border-bottom: 1px solid #191919;
+            padding-bottom: 3%;
+        }
+	</style>
+
+</head>
+<body>
+    <div class="container" id="ordersContainer"></div>
+
+    <script>
+
+        const socket = new WebSocket("ws://localhost:8080/api/orders/all");
+
+
+        socket.onmessage = function (event) {
+            const ordersData = JSON.parse(event.data);
+            updateOrders(ordersData);
+        };
+
+        function updateOrders(ordersData) {
+            const ordersContainer = document.getElementById("ordersContainer");
+            ordersContainer.innerHTML = ""; 
+
+            ordersData.forEach(order => {
+                const cardDiv = document.createElement("div");
+                cardDiv.className = "card";
+
+                const nameH1 = document.createElement("h1");
+                nameH1.textContent = order.name;
+                cardDiv.appendChild(nameH1);
+
+                const ordersDiv = document.createElement("div");
+                ordersDiv.className = "orders";
+                const ol = document.createElement("ol");
+
+                order.articles.forEach(article => {
+                    const li = document.createElement("li");
+                    li.className = "item";
+                    li.textContent = `${article.article} ${article.quantity} ${article.measureType}`;
+                    ol.appendChild(li);
+                });
+
+                ordersDiv.appendChild(ol);
+                cardDiv.appendChild(ordersDiv);
+                ordersContainer.appendChild(cardDiv);
+            });
+        }
+    </script>
+
+</body>
+</html>

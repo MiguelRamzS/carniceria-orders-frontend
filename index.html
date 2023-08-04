@@ -87,12 +87,14 @@
 
     <script>
 
-        const socket = new WebSocket("wss://carniceriabackend-migueramirez888.b4a.run/api/orders/all");
+        const socket = new WebSocket("ws://localhost:8080/api/orders/all");
 
 
         socket.onmessage = function (event) {
             const ordersData = JSON.parse(event.data);
+            console.log(ordersData)
             updateOrders(ordersData);
+
         };
 
         function updateOrders(ordersData) {
@@ -100,27 +102,31 @@
             ordersContainer.innerHTML = ""; 
 
             ordersData.forEach(order => {
-                const cardDiv = document.createElement("div");
-                cardDiv.className = "card";
+                
+                if (!order.isPayed) {
+                    const cardDiv = document.createElement("div");
+                    cardDiv.className = "card";
 
-                const nameH1 = document.createElement("h1");
-                nameH1.textContent = order.name;
-                cardDiv.appendChild(nameH1);
+                    const nameH1 = document.createElement("h1");
+                    nameH1.textContent = order.name;
+                    cardDiv.appendChild(nameH1);
 
-                const ordersDiv = document.createElement("div");
-                ordersDiv.className = "orders";
-                const ol = document.createElement("ol");
+                    const ordersDiv = document.createElement("div");
+                    ordersDiv.className = "orders";
+                    const ol = document.createElement("ol");
 
-                order.articles.forEach(article => {
-                    const li = document.createElement("li");
-                    li.className = "item";
-                    li.textContent = `${article.article} ${article.quantity} ${article.measureType}`;
-                    ol.appendChild(li);
-                });
+                    order.articles.forEach(article => {
+                        const li = document.createElement("li");
+                        li.className = "item";
+                        li.textContent = `${article.article} ${article.quantity} ${article.measureType}`;
+                        ol.appendChild(li);
+                    });
 
-                ordersDiv.appendChild(ol);
-                cardDiv.appendChild(ordersDiv);
-                ordersContainer.appendChild(cardDiv);
+                    ordersDiv.appendChild(ol);
+                    cardDiv.appendChild(ordersDiv);
+                    ordersContainer.appendChild(cardDiv);
+                }
+                
             });
         }
     </script>
